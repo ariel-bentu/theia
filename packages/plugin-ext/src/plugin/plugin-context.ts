@@ -28,6 +28,7 @@ import { StatusBarMessageRegistryExt } from './status-bar-message-registry';
 import { WindowStateExtImpl } from './window-state';
 import { WorkspaceExtImpl } from './workspace';
 import { EnvExtImpl } from './env';
+import { ConnectionStatusImpl } from './connection-status';
 import { QueryParameters } from '../common/env';
 import {
     ConfigurationTarget,
@@ -151,6 +152,7 @@ export function createAPIFactory(
     const connectionExt = rpc.set(MAIN_RPC_CONTEXT.CONNECTION_EXT, new ConnectionExtImpl(rpc));
     const languagesContributionExt = rpc.set(MAIN_RPC_CONTEXT.LANGUAGES_CONTRIBUTION_EXT, new LanguagesContributionExtImpl(rpc, connectionExt));
     rpc.set(MAIN_RPC_CONTEXT.DEBUG_EXT, debugExt);
+    const connectionStatusImpl = new ConnectionStatusImpl();
 
     return function (plugin: InternalPlugin): typeof theia {
         const commands: typeof theia.commands = {
@@ -632,11 +634,20 @@ export function createAPIFactory(
             }
         };
 
+        const connectionStatus: typeof theia.connectionStatus = {
+            onConnectionStatusChanged(listener, thisArg?, disposables?): theia.Disposable {
+                // return connectionStatusImpl.onConnectionStatusChanged(listener, thisArg, disposables);
+                connectionStatusImpl.sayHello();
+                return new Disposable(() => { });
+            }
+        };
+
         return <typeof theia>{
             version: require('../../package.json').version,
             commands,
             window,
             workspace,
+            connectionStatus,
             env,
             languageServer,
             languages,

@@ -19,6 +19,16 @@
 * These API are NOT stable and subject to change. Use it on own risk.
 */
 declare module '@theia/plugin' {
+
+    export namespace connectionStatus {
+        export const onConnectionStatusChanged: Event<ConnectionStatusChangeEvent>;
+
+        export interface ConnectionStatusChangeEvent {
+            readonly httpStatusCode: number;
+            readonly connected: boolean;
+        }
+    }
+
     export namespace languageServer {
         /**
          * Registers new language server.
